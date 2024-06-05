@@ -24,7 +24,19 @@ class FinTrackerServiceImpl(
 
     override fun create(dto: SpendingDto): String {
         val id = finTrackerRepository.save(dto.toEntity()).id
-        return "Запись успешно создана с id: $id"
+        return "Запись успешно создана с id: $id."
+    }
+
+    override fun update(id: Int, dto: SpendingDto): String {
+        val existingSpending = finTrackerRepository.findByIdOrNull(id)
+            ?: throw SpendNotFoundException(id)
+
+        existingSpending.amount = dto.amount
+        existingSpending.type = dto.type
+        existingSpending.comment = dto.comment
+
+        finTrackerRepository.save(existingSpending)
+        return "Запись успешно обновлена."
     }
 
     private fun SpendingEntity.toDto(): SpendingDto {

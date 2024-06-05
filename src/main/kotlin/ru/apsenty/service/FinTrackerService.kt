@@ -9,4 +9,6 @@ interface FinTrackerService {
     fun getById(id: Int): SpendingDto
 
     fun create(dto: SpendingDto): String
+
+    fun update(id: Int, dto: SpendingDto): String
 }
