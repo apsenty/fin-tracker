@@ -5,4 +5,8 @@ import ru.apsenty.dto.SpendingDto
 interface FinTrackerService {
 
     fun getAll(): List<SpendingDto>
+
+    fun getById(id: Int): SpendingDto
+
+    fun create(dto: SpendingDto): String
 }
