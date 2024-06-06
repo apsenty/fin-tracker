@@ -1,15 +1,8 @@
 package ru.apsenty.controller
 
+import jakarta.transaction.Transactional
 import org.springframework.http.HttpStatus
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.ResponseStatus
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import ru.apsenty.dto.SpendingDto
 import ru.apsenty.responses.CreateResponse
 import ru.apsenty.responses.DeleteResponse
@@ -47,9 +40,11 @@ class FinTrackerController(private val finTrackerService: FinTrackerService) {
     /**
      * Обновление записи расхода/дохода
      */
-    @PutMapping("/{id}")
-    fun update(@PathVariable("id") id: Int, @RequestBody dto: SpendingDto): UpdateResponse {
-        return finTrackerService.update(id, dto)
+    @PatchMapping("/{id}")
+    @Transactional
+    fun update(@PathVariable id: Int, @RequestBody spendingUpdates: Map<String, Any>): UpdateResponse {
+        return finTrackerService.update(id, spendingUpdates)
+
     }
 
     /**
@@ -59,4 +54,6 @@ class FinTrackerController(private val finTrackerService: FinTrackerService) {
     fun delete(@PathVariable("id") id: Int): DeleteResponse {
         return finTrackerService.delete(id)
     }
+
+
 }

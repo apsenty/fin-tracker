@@ -1,6 +1,5 @@
 package ru.apsenty.service.impl
 
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import ru.apsenty.dto.SpendingDto
 import ru.apsenty.entity.SpendingEntity
@@ -20,9 +19,8 @@ class FinTrackerServiceImpl(
     }
 
     override fun getById(id: Int): SpendingDto {
-        return finTrackerRepository.findByIdOrNull(id)
-            ?.toDto()
-            ?: throw SpendNotFoundException(id)
+        return finTrackerRepository.findById(id).orElseThrow { SpendNotFoundException(id) }
+            .toDto()
     }
 
     override fun create(dto: SpendingDto): CreateResponse {
@@ -30,24 +28,26 @@ class FinTrackerServiceImpl(
         return CreateResponse(id)
     }
 
-    override fun update(id: Int, dto: SpendingDto): UpdateResponse {
-        val existingSpending = finTrackerRepository.findByIdOrNull(id)
-            ?: throw SpendNotFoundException(id)
-
-        existingSpending.amount = dto.amount
-        existingSpending.type = dto.type
-        existingSpending.comment = dto.comment
-
-        finTrackerRepository.save(existingSpending)
-        return UpdateResponse(id)
-    }
-
     override fun delete(id: Int): DeleteResponse {
-        val existingSpending = finTrackerRepository.findByIdOrNull(id)
-            ?: throw SpendNotFoundException(id)
+        val existingSpending = finTrackerRepository.findById(id).orElseThrow { SpendNotFoundException(id) }
 
         finTrackerRepository.deleteById(existingSpending.id)
         return DeleteResponse(id)
+    }
+
+    override fun update(id: Int, spendingUpdates: Map<String, Any>): UpdateResponse {
+        val spending = finTrackerRepository.findById(id).orElseThrow { SpendNotFoundException(id) }
+
+        spendingUpdates.forEach { (key, value) ->
+            when (key) {
+                "amount" -> spending.amount = value as Double
+                "type" -> spending.type = value as String
+                "comment" -> spending.comment = value as String
+            }
+        }
+
+        finTrackerRepository.save(spending)
+        return UpdateResponse(id)
     }
 
     private fun SpendingEntity.toDto(): SpendingDto {

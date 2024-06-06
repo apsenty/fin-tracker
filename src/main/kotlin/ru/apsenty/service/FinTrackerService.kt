@@ -13,7 +13,7 @@ interface FinTrackerService {
 
     fun create(dto: SpendingDto): CreateResponse
 
-    fun update(id: Int, dto: SpendingDto): UpdateResponse
-
     fun delete(id: Int): DeleteResponse
+
+    fun update(id: Int, spendingUpdates: Map<String, Any>): UpdateResponse
 }
