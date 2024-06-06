@@ -6,6 +6,9 @@ import ru.apsenty.dto.SpendingDto
 import ru.apsenty.entity.SpendingEntity
 import ru.apsenty.exception.SpendNotFoundException
 import ru.apsenty.repository.FinTrackerRepository
+import ru.apsenty.responses.CreateResponse
+import ru.apsenty.responses.DeleteResponse
+import ru.apsenty.responses.UpdateResponse
 import ru.apsenty.service.FinTrackerService
 
 @Service
@@ -22,12 +25,12 @@ class FinTrackerServiceImpl(
             ?: throw SpendNotFoundException(id)
     }
 
-    override fun create(dto: SpendingDto): String {
+    override fun create(dto: SpendingDto): CreateResponse {
         val id = finTrackerRepository.save(dto.toEntity()).id
-        return "Запись успешно создана с id: $id."
+        return CreateResponse(id)
     }
 
-    override fun update(id: Int, dto: SpendingDto): String {
+    override fun update(id: Int, dto: SpendingDto): UpdateResponse {
         val existingSpending = finTrackerRepository.findByIdOrNull(id)
             ?: throw SpendNotFoundException(id)
 
@@ -36,7 +39,15 @@ class FinTrackerServiceImpl(
         existingSpending.comment = dto.comment
 
         finTrackerRepository.save(existingSpending)
-        return "Запись успешно обновлена."
+        return UpdateResponse(id)
+    }
+
+    override fun delete(id: Int): DeleteResponse {
+        val existingSpending = finTrackerRepository.findByIdOrNull(id)
+            ?: throw SpendNotFoundException(id)
+
+        finTrackerRepository.deleteById(existingSpending.id)
+        return DeleteResponse(id)
     }
 
     private fun SpendingEntity.toDto(): SpendingDto {

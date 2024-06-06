@@ -1,6 +1,7 @@
 package ru.apsenty.controller
 
 import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -10,6 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import ru.apsenty.dto.SpendingDto
+import ru.apsenty.responses.CreateResponse
+import ru.apsenty.responses.DeleteResponse
+import ru.apsenty.responses.UpdateResponse
 import ru.apsenty.service.FinTrackerService
 
 @RestController
@@ -36,7 +40,7 @@ class FinTrackerController(private val finTrackerService: FinTrackerService) {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun create(@RequestBody dto: SpendingDto): String {
+    fun create(@RequestBody dto: SpendingDto): CreateResponse {
         return finTrackerService.create(dto)
     }
 
@@ -44,8 +48,15 @@ class FinTrackerController(private val finTrackerService: FinTrackerService) {
      * Обновление записи расхода/дохода
      */
     @PutMapping("/{id}")
-    fun update(@PathVariable("id") id: Int, @RequestBody dto: SpendingDto): String {
+    fun update(@PathVariable("id") id: Int, @RequestBody dto: SpendingDto): UpdateResponse {
         return finTrackerService.update(id, dto)
     }
 
+    /**
+     * Удаление записи расхода/дохода
+     */
+    @DeleteMapping("/{id}")
+    fun delete(@PathVariable("id") id: Int): DeleteResponse {
+        return finTrackerService.delete(id)
+    }
 }
