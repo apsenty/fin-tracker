@@ -39,7 +39,7 @@ object FinTrackerCoreService {
         val response = RestAssured.given().log().all()
             .contentType(ContentType.JSON)
             .body(requestBody)
-            .put("$BASE_URI/$spendingId")
+            .patch("$BASE_URI/$spendingId")
 
         return RestResponseImpl(BaseResponse::class.java, response)
     }

@@ -6,6 +6,6 @@ class SpendNotFoundException(spendingId: Int): BaseException(
     HttpStatus.NOT_FOUND,
     ApiError(
         errorCode = "spendingNotFound",
-        description = "Запись с id:$spendingId не найдена."
+        description = "Запись с id: $spendingId не найдена."
     )
 )

@@ -41,7 +41,7 @@ class FinTrackerApplicationTests {
 			{ assertEquals(1, response.body.id) },
 			{ assertEquals(100.0, response.body.amount) },
 			{ assertEquals("Расход", response.body.type) },
-			{ assertEquals("Чебурек на вокзале", response.body.comment) }
+			{ assertEquals("Семь чебуреков на вокзале", response.body.comment) }
 		)
 	}
 
@@ -55,7 +55,7 @@ class FinTrackerApplicationTests {
 		assertAll(
 			{ assertEquals(404, response.statusCode) },
 			{ assertEquals("spendingNotFound", errorResponse.errorCode) },
-			{ assertEquals("Запись с id:$id не найдена.", errorResponse.description) }
+			{ assertEquals("Запись с id: $id не найдена.", errorResponse.description) }
 		)
 	}
 
@@ -76,20 +76,24 @@ class FinTrackerApplicationTests {
 			{ assertEquals("Запись успешно создана.", response.body.message) },
 			{ assertThat(response.body.id).isNotNull() }
 		)
+
+		FinTrackerCoreService.deleteRecord(response.body.id!!)
 	}
 
 	@Test
 	@DisplayName("Обновление записи")
 	fun updateRecord() {
-		val requestBody = RequestBody(
+		val createRequestBody = RequestBody(
 			amount = 80.0,
 			type = "Расход",
 			comment = "Пирожок"
 		)
-		val id = FinTrackerCoreService.createRecord(requestBody).body.id
-		requestBody.comment = "Или не пирожок"
+		val id = FinTrackerCoreService.createRecord(createRequestBody).body.id
+		val updateRequestBody = RequestBody(
+			comment = "Или не пирожок"
+		)
 
-		val response = FinTrackerCoreService.updateRecord(requestBody, id!!)
+		val response = FinTrackerCoreService.updateRecord(updateRequestBody, id!!)
 
 		assertAll(
 			{ assertEquals(200, response.statusCode) },
@@ -97,24 +101,24 @@ class FinTrackerApplicationTests {
 			{ assertEquals("Запись успешно обновлена.", response.body.message) },
 			{ assertEquals(id, response.body.id) }
 		)
+
+		FinTrackerCoreService.deleteRecord(response.body.id!!)
 	}
 
 	@Test
 	@DisplayName("Обновление записи. Ошибка при несуществующем id")
 	fun updateRecordErrorNoyExistingId() {
-		val requestBody = RequestBody(
-			amount = 80.0,
-			type = "Расход",
-			comment = "Пирожок"
-		)
 		val id = 0
-		val response = FinTrackerCoreService.updateRecord(requestBody, id)
+		val updateRequestBody = RequestBody(
+			comment = "Или не пирожок"
+		)
+		val response = FinTrackerCoreService.updateRecord(updateRequestBody, id)
 		val errorResponse: ErrorResponse = objectMapper.readValue(response.content!!)
 
 		assertAll(
 			{ assertEquals(404, response.statusCode) },
 			{ assertEquals("spendingNotFound", errorResponse.errorCode) },
-			{ assertEquals("Запись с id:$id не найдена.", errorResponse.description) }
+			{ assertEquals("Запись с id: $id не найдена.", errorResponse.description) }
 		)
 	}
 
@@ -147,7 +151,7 @@ class FinTrackerApplicationTests {
 		assertAll(
 			{ assertEquals(404, response.statusCode) },
 			{ assertEquals("spendingNotFound", errorResponse.errorCode) },
-			{ assertEquals("Запись с id:$id не найдена.", errorResponse.description) }
+			{ assertEquals("Запись с id: $id не найдена.", errorResponse.description) }
 		)
 	}
 
