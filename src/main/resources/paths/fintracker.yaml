@@ -1,0 +1,111 @@
+get:
+  tags:
+    - fintracker
+  summary: Получить список записей
+  description: Данный запрос позволяет получить список всех записей из таблицы `spending`
+  operationId: ''
+  responses:
+    '200':
+      description: Успешный запрос
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: number<int>
+                  example: 1
+                  description: id записи
+                amount:
+                  type: number<double>
+                  example: 100
+                  description: Сумма расхода/дохода
+                comment:
+                  type: string
+                  example: Тест
+                  description: Комментарий к записи
+                type:
+                  type: string
+                  example: Расход
+                  description: Тип записи (расход или доход)
+            example:
+              - amount: 100
+                comment: Тест
+                id: 1
+                type: Расход
+              - amount: 200
+                comment: Тест
+                id: 2
+                type: Расход
+          examples:
+            Успешный запрос:
+              value:
+                - amount: 100
+                  comment: Тест
+                  id: 1
+                  type: Расход
+                - amount: 200
+                  comment: Тест
+                  id: 2
+                  type: Расход
+post:
+  tags:
+    - fintracker
+  summary: Создать запись
+  description: Данный метод позволяет создавать новую запись в таблице `spending`
+  operationId: '1'
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - amount
+            - type
+          properties:
+            amount:
+              type: number<double>
+              example: 150
+              description: Сумма расхода/дохода
+            comment:
+              type: string
+              example: Тест
+              description: Комментарий к записи
+            type:
+              type: string
+              example: Расход
+              description: Тип записи (расход или доход)
+        examples:
+          Создать запись:
+            value:
+              amount: 150
+              comment: Тест
+              type: Расход
+  responses:
+    '201':
+      description: Запись успешно создана
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: string
+                example: success
+                description: Код ответа
+              id:
+                type: number<int>
+                example: 1
+                description: id записи
+              message:
+                type: string
+                example: Запись успешно создана.
+                description: Сообщение
+          examples:
+            Запись успешно создана:
+              value:
+                code: success
+                id: 1
+                message: Запись успешно создана.

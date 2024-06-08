@@ -1,0 +1,187 @@
+get:
+  tags:
+    - fintracker
+  summary: Получить информацию о записи по ее id
+  description: Данный метод позволяет получить информацию о записи по её id.
+  operationId: id
+  responses:
+    '200':
+      description: Успешный запрос
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: number<int>
+                description: id записи
+              amount:
+                type: number<double>
+                description: Сумма расхода/дохода
+              type:
+                type: string
+                description: Тип записи (расход или доход)
+              comment:
+                type: string
+                description: Комментарий к записи
+          examples:
+            Успешный запрос:
+              value:
+                id: 1
+                amount: 100
+                type: Расход
+                comment: Тест
+    '404':
+      description: Запись не найдена
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              description:
+                type: string
+                example: Запись не найдена.
+                description: Текстовое описание ошибки
+              errorCode:
+                type: string
+                example: spendingNotFound
+                description: Код ошибки
+          examples:
+            Запись не найдена:
+              value:
+                description: Запись не найдена.
+                errorCode: spendingNotFound
+delete:
+  tags:
+    - fintracker
+  summary: Удалить запись
+  description: Данный метод позволяет удалить запись по её id
+  operationId: '2'
+  responses:
+    '200':
+      description: Запись успешно удалена
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: string
+                example: success
+                description: Код ответа
+              id:
+                type: number<int>
+                example: 1
+                description: id записи
+              message:
+                type: string
+                example: Запись успешно удалена.
+                description: Сообщение
+          examples:
+            Запись успешно удалена:
+              value:
+                code: success
+                id: 1
+                message: Запись успешно удалена.
+    '404':
+      description: Запись не найдена
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              description:
+                type: string
+                example: Запись не найдена.
+                description: Текстовое описание ошибки
+              errorCode:
+                type: string
+                example: spendingNotFound
+                description: Код ошибки
+          examples:
+            Запись не найдена:
+              value:
+                description: Запись не найдена.
+                errorCode: spendingNotFound
+patch:
+  tags:
+    - fintracker
+  summary: Частичное обновление записи
+  description: >-
+    Данный метод позволяет обновлять данные записи по её id. Обновляются только
+    те поля, которые переданы в теле запроса.
+  operationId: '3'
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            amount:
+              type: number<double>
+              description: Сумма расхода/дохода
+            type:
+              type: string
+              description: Тип записи (расход или доход)
+            comment:
+              type: string
+              example: Тест
+              description: Комментарий к записи
+        examples:
+          Частичное обновление записи:
+            value:
+              comment: Тест
+  responses:
+    '200':
+      description: Запись успешно обновлена
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: string
+                example: success
+                description: Код ответа
+              id:
+                type: number<int>
+                example: 1
+                description: id записи
+              message:
+                type: string
+                example: Запись успешно обновлена.
+                description: Сообщение
+          examples:
+            Запись успешно обновлена:
+              value:
+                code: success
+                id: 1
+                message: Запись успешно обновлена.
+    '404':
+      description: Запись не найдена
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              description:
+                type: string
+                example: Запись не найдена.
+                description: Текстовое описание ошибки
+              errorCode:
+                type: string
+                example: spendingNotFound
+                description: Код ошибки
+          examples:
+            Запись не найдена:
+              value:
+                description: Запись не найдена.
+                errorCode: spendingNotFound
+parameters:
+  - name: id
+    in: path
+    required: true
+    schema:
+      type: string
+      example: '1'
+    description: id записи

@@ -1,0 +1,47 @@
+# This file instructs Redocly's linter to ignore the rules contained for specific parts of your API.
+# See https://redoc.ly/docs/cli/ for more information.
+bundle.yaml:
+  info-license:
+    - '#/info'
+  spec:
+    - >-
+      #/paths/~1fintracker~1{id}/get/responses/200/content/application~1json/schema/properties/id/type
+    - >-
+      #/paths/~1fintracker~1{id}/get/responses/200/content/application~1json/schema/properties/amount/type
+    - >-
+      #/paths/~1fintracker~1{id}/delete/responses/200/content/application~1json/schema/properties/id/type
+    - >-
+      #/paths/~1fintracker~1{id}/patch/requestBody/content/application~1json/schema/properties/amount/type
+    - >-
+      #/paths/~1fintracker~1{id}/patch/responses/200/content/application~1json/schema/properties/id/type
+    - >-
+      #/paths/~1fintracker/get/responses/200/content/application~1json/schema/items/properties/id/type
+    - >-
+      #/paths/~1fintracker/get/responses/200/content/application~1json/schema/items/properties/amount/type
+    - >-
+      #/paths/~1fintracker/post/requestBody/content/application~1json/schema/properties/amount/type
+    - >-
+      #/paths/~1fintracker/post/responses/201/content/application~1json/schema/properties/id/type
+  no-invalid-media-type-examples:
+    - >-
+      #/paths/~1fintracker~1{id}/get/responses/200/content/application~1json/schema
+    - >-
+      #/paths/~1fintracker~1{id}/delete/responses/200/content/application~1json/schema
+    - >-
+      #/paths/~1fintracker~1{id}/patch/requestBody/content/application~1json/schema
+    - >-
+      #/paths/~1fintracker~1{id}/patch/responses/200/content/application~1json/schema
+    - '#/paths/~1fintracker/get/responses/200/content/application~1json/schema'
+    - '#/paths/~1fintracker/post/requestBody/content/application~1json/schema'
+    - '#/paths/~1fintracker/post/responses/201/content/application~1json/schema'
+  operation-operationId:
+    - '#/paths/~1fintracker/get/operationId'
+  operation-4xx-response:
+    - '#/paths/~1fintracker/get/responses'
+    - '#/paths/~1fintracker/post/responses'
+  security-defined:
+    - '#/paths/~1fintracker~1{id}/get'
+    - '#/paths/~1fintracker~1{id}/delete'
+    - '#/paths/~1fintracker~1{id}/patch'
+    - '#/paths/~1fintracker/get'
+    - '#/paths/~1fintracker/post'
