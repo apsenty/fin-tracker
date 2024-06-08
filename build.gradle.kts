@@ -38,4 +38,5 @@ kotlin {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+	defaultCharacterEncoding = "UTF-8"
 }
