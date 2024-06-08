@@ -70,4 +70,6 @@
       OWNER to postgres;
 3. В файле `src/main/resources/application.yml` замените значения `your_name` и `your_password` на ваш логин и пароль пользователя БД.
 4. Запустите приложение `FinTrackerApplication.kt`.
-5. Теперь вы можете отправлять api-запросы в соответствии с документацией, представленной ниже
+5. Теперь вы можете отправлять api-запросы в соответствии с документацией, представленной ниже.
+
+![Dynamic YAML Badge](https://img.shields.io/badge/dynamic/yaml?url=src%2Fmain%2Fresources%2Fopenapi.yaml&query=%24.version)

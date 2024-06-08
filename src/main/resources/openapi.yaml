@@ -1,6 +1,7 @@
 openapi: 3.0.3
 info:
-  title: RESTful API
+  title: FinTracker
+  description: Документация по работе с api-методами приложения FinTracker
   version: 1.0.0
   contact: {}
 servers:
@@ -8,47 +9,40 @@ servers:
 paths:
   /fintracker/{id}:
     get:
+      tags:
+        - fintracker
       summary: Получить информацию о записи по ее id
-      description: >-
-        This is a GET request and it is used to "get" data from an endpoint.
-        There is no request body for a GET request, but you can use query
-        parameters to help specify the resource you want data on (e.g., in this
-        request, we have `id=1`).
-
-
-        A successful GET response will have a `200 OK` status, and should
-        include some kind of response body - for example, HTML web content or
-        JSON data.
+      description: Данный метод позволяет получить информацию о записи по её id.
       operationId: id
       responses:
         '200':
-          description: 200 OK
+          description: Успешный запрос
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  amount:
-                    type: number
-                    example: 100
-                  comment:
-                    type: string
-                    example: Тест
                   id:
-                    type: number
-                    example: 1
+                    type: number<int>
+                    description: id записи
+                  amount:
+                    type: number<double>
+                    description: Сумма расхода/дохода
                   type:
                     type: string
-                    example: Расход
+                    description: Тип записи (расход или доход)
+                  comment:
+                    type: string
+                    description: Комментарий к записи
               examples:
-                200 OK:
+                Успешный запрос:
                   value:
-                    amount: 100
-                    comment: Тест
                     id: 1
+                    amount: 100.0
                     type: Расход
+                    comment: Тест
         '404':
-          description: 404 Not Found
+          description: Запись не найдена
           content:
             application/json:
               schema:
@@ -57,27 +51,76 @@ paths:
                   description:
                     type: string
                     example: Запись не найдена.
+                    description: Текстовое описание ошибки
                   errorCode:
                     type: string
                     example: spendingNotFound
+                    description: Код ошибки
               examples:
-                404 Not Found:
+                Запись не найдена:
                   value:
                     description: Запись не найдена.
                     errorCode: spendingNotFound
-    put:
-      summary: Обновить запись
-      description: >-
-        This is a PUT request and it is used to overwrite an existing piece of
-        data. For instance, after you create an entity with a POST request, you
-        may want to modify that later. You can do that using a PUT request. You
-        typically identify the entity being updated by including an identifier
-        in the URL (eg. `id=1`).
-
-
-        A successful PUT request typically returns a `200 OK`, `201 Created`, or
-        `204 No Content` response code.
+    delete:
+      tags:
+        - fintracker
+      summary: Удалить запись
+      description: Данный метод позволяет удалить запись по её id
       operationId: '2'
+      responses:
+        '200':
+          description: Запись успешно удалена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: success
+                    description: Код ответа
+                  id:
+                    type: number<int>
+                    example: 1
+                    description: id записи
+                  message:
+                    type: string
+                    example: Запись успешно удалена.
+                    description: Сообщение
+              examples:
+                Запись успешно удалена:
+                  value:
+                    code: success
+                    id: 1
+                    message: Запись успешно удалена.
+        '404':
+          description: Запись не найдена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  description:
+                    type: string
+                    example: Запись не найдена.
+                    description: Текстовое описание ошибки
+                  errorCode:
+                    type: string
+                    example: spendingNotFound
+                    description: Код ошибки
+              examples:
+                Запись не найдена:
+                  value:
+                    description: Запись не найдена.
+                    errorCode: spendingNotFound
+    patch:
+      tags:
+        - fintracker
+      summary: Частичное обновление записи
+      description: >-
+        Данный метод позволяет обновлять данные записи по её id. Обновляются
+        только те поля, которые переданы в теле запроса.
+      operationId: '3'
       requestBody:
         content:
           application/json:
@@ -85,23 +128,22 @@ paths:
               type: object
               properties:
                 amount:
-                  type: number
-                  example: 150
-                comment:
-                  type: string
-                  example: Кофе
+                  type: number<double>
+                  description: Сумма расхода/дохода
                 type:
                   type: string
-                  example: Расход
+                  description: Тип записи (расход или доход)
+                comment:
+                  type: string
+                  example: Тест
+                  description: Комментарий к записи
             examples:
-              Обновить запись:
+              Частичное обновление записи:
                 value:
-                  amount: 150
-                  comment: Кофе
-                  type: Расход
+                  comment: Тест
       responses:
         '200':
-          description: 200 OK
+          description: Запись успешно обновлена
           content:
             application/json:
               schema:
@@ -110,20 +152,23 @@ paths:
                   code:
                     type: string
                     example: success
+                    description: Код ответа
                   id:
-                    type: number
+                    type: number<int>
                     example: 1
+                    description: id записи
                   message:
                     type: string
                     example: Запись успешно обновлена.
+                    description: Сообщение
               examples:
-                200 OK:
+                Запись успешно обновлена:
                   value:
                     code: success
                     id: 1
                     message: Запись успешно обновлена.
         '404':
-          description: 404 Not Found
+          description: Запись не найдена
           content:
             application/json:
               schema:
@@ -132,127 +177,13 @@ paths:
                   description:
                     type: string
                     example: Запись не найдена.
+                    description: Текстовое описание ошибки
                   errorCode:
                     type: string
                     example: spendingNotFound
+                    description: Код ошибки
               examples:
-                404 Not Found:
-                  value:
-                    description: Запись не найдена.
-                    errorCode: spendingNotFound
-    delete:
-      summary: Удалить запись
-      description: >-
-        This is a DELETE request, and it is used to delete data that was
-        previously created via a POST request. You typically identify the entity
-        being updated by including an identifier in the URL (eg. `id=1`).
-
-
-        A successful DELETE request typically returns a `200 OK`, `202
-        Accepted`, or `204 No Content` response code.
-      operationId: '3'
-      requestBody:
-        content:
-          application/json:
-            examples:
-              Удалить запись:
-                value: ''
-      responses:
-        '200':
-          description: 200 OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                    example: success
-                  id:
-                    type: number
-                    example: 1
-                  message:
-                    type: string
-                    example: Запись успешно удалена.
-              examples:
-                200 OK:
-                  value:
-                    code: success
-                    id: 1
-                    message: Запись успешно удалена.
-        '404':
-          description: 404 Not Found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    example: Запись не найдена.
-                  errorCode:
-                    type: string
-                    example: spendingNotFound
-              examples:
-                404 Not Found:
-                  value:
-                    description: Запись не найдена.
-                    errorCode: spendingNotFound
-    patch:
-      summary: Обновить запись частично
-      description: Обновить запись частично
-      operationId: '4'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                comment:
-                  type: string
-                  example: Тест
-            examples:
-              Обновить запись частично:
-                value:
-                  comment: Тест
-      responses:
-        '200':
-          description: 200 OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                    example: success
-                  id:
-                    type: number
-                    example: 1
-                  message:
-                    type: string
-                    example: Запись успешно создана.
-              examples:
-                200 OK:
-                  value:
-                    code: success
-                    id: 1
-                    message: Запись успешно создана.
-        '404':
-          description: 404 Not Found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    example: Запись не найдена.
-                  errorCode:
-                    type: string
-                    example: spendingNotFound
-              examples:
-                404 Not Found:
+                Запись не найдена:
                   value:
                     description: Запись не найдена.
                     errorCode: spendingNotFound
@@ -263,23 +194,19 @@ paths:
         schema:
           type: string
           example: '1'
+        description: id записи
   /fintracker:
     get:
+      tags:
+        - fintracker
       summary: Получить список записей
       description: >-
-        This is a GET request and it is used to "get" data from an endpoint.
-        There is no request body for a GET request, but you can use query
-        parameters to help specify the resource you want data on (e.g., in this
-        request, we have `id=1`).
-
-
-        A successful GET response will have a `200 OK` status, and should
-        include some kind of response body - for example, HTML web content or
-        JSON data.
+        Данный запрос позволяет получить список всех записей из таблицы
+        `spending`
       operationId: ''
       responses:
         '200':
-          description: 200 OK
+          description: Успешный запрос
           content:
             application/json:
               schema:
@@ -287,18 +214,22 @@ paths:
                 items:
                   type: object
                   properties:
+                    id:
+                      type: number<int>
+                      example: 1
+                      description: id записи
                     amount:
-                      type: number
-                      example: 100
+                      type: number<double>
+                      example: 100.0
+                      description: Сумма расхода/дохода
                     comment:
                       type: string
                       example: Тест
-                    id:
-                      type: number
-                      example: 1
+                      description: Комментарий к записи
                     type:
                       type: string
                       example: Расход
+                      description: Тип записи (расход или доход)
                 example:
                   - amount: 100
                     comment: Тест
@@ -309,7 +240,7 @@ paths:
                     id: 2
                     type: Расход
               examples:
-                200 OK:
+                Успешный запрос:
                   value:
                     - amount: 100
                       comment: Тест
@@ -320,31 +251,32 @@ paths:
                       id: 2
                       type: Расход
     post:
+      tags:
+        - fintracker
       summary: Создать запись
-      description: >-
-        This is a POST request, submitting data to an API via the request body.
-        This request submits JSON data, and the data is reflected in the
-        response.
-
-
-        A successful POST request typically returns a `200 OK` or `201 Created`
-        response code.
+      description: Данный метод позволяет создавать новую запись в таблице `spending`
       operationId: '1'
       requestBody:
         content:
           application/json:
             schema:
               type: object
+              required:
+                - amount
+                - type
               properties:
                 amount:
-                  type: number
+                  type: number<double>
                   example: 150
+                  description: Сумма расхода/дохода
                 comment:
                   type: string
                   example: Тест
+                  description: Комментарий к записи
                 type:
                   type: string
                   example: Расход
+                  description: Тип записи (расход или доход)
             examples:
               Создать запись:
                 value:
@@ -353,7 +285,7 @@ paths:
                   type: Расход
       responses:
         '201':
-          description: 201 Created
+          description: Запись успешно создана
           content:
             application/json:
               schema:
@@ -362,16 +294,21 @@ paths:
                   code:
                     type: string
                     example: success
+                    description: Код ответа
                   id:
-                    type: number
+                    type: number<int>
                     example: 1
+                    description: id записи
                   message:
                     type: string
                     example: Запись успешно создана.
+                    description: Сообщение
               examples:
-                201 Created:
+                Запись успешно создана:
                   value:
                     code: success
                     id: 1
                     message: Запись успешно создана.
-tags: []
+tags:
+  - name: fintracker
+    description: Методы работы с таблицей учета расходов и доходов `spending`
