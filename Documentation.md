@@ -1,7 +1,5 @@
 # Документация REST API
 
-**Содержание**
-
 ## Аутентификация
 На данном этапе аутентификация пользователей не предусмотрена.
 
@@ -56,15 +54,6 @@ curl --location 'http://127.0.0.1:8080/fintracker/1'
   "comment": "Кофе"
 }
 ```
-**Список ошибок:**  
-![Static Badge](https://img.shields.io/badge/404-NotFound-red) Записи с таким id не существует  
-Ответ:
-```json
-{
-    "errorCode": "spendingNotFound",
-    "description": "Запись не найдена."
-}
-```
 
 ### Создание новой записи расхода/дохода
 `POST /fintracker`
@@ -114,15 +103,6 @@ curl --location --request PATCH 'http://127.0.0.1:8080/fintracker/1' \
   "message": "Запись успешно обновлена."
 }
 ```
-**Список ошибок:**  
-![Static Badge](https://img.shields.io/badge/404-NotFound-red) Записи с таким id не существует  
-Ответ:
-```json
-{
-    "errorCode": "spendingNotFound",
-    "description": "Запись не найдена."
-}
-```
 
 ### Удаление существующей записи расхода/дохода
 `DELETE /fintracker/{id}`
@@ -142,7 +122,8 @@ curl --location --request DELETE 'http://127.0.0.1:8080/fintracker/3'
   "message": "Запись успешно удалена."
 }
 ```
-**Список ошибок:**  
+
+## Обработка ошибок
 ![Static Badge](https://img.shields.io/badge/404-NotFound-red) Записи с таким id не существует  
 Ответ:
 ```json
