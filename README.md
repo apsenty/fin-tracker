@@ -72,4 +72,6 @@
 4. Запустите приложение `FinTrackerApplication.kt`.
 5. Теперь вы можете отправлять api-запросы в соответствии с документацией, представленной ниже.
 
-![Dynamic YAML Badge](https://img.shields.io/badge/dynamic/yaml?url=src%2Fmain%2Fresources%2Fopenapi.yaml&query=%24.version)
+## Документация
+С наглядной документацией можно ознакомиться, скачав репозиторий и открыв в браузере файл `apidoc.html`.  
+Краткий список методов представлен в файле [Documentation](Documentation.md)
