@@ -2,157 +2,184 @@ package ru.apsenty
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertAll
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import ru.apsenty.models.ErrorResponse
-import ru.apsenty.models.RequestBody
-import ru.apsenty.services.FinTrackerCoreService
-import kotlin.test.assertEquals
+import org.springframework.http.MediaType
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import ru.apsenty.models.BaseResponse
 
 @SpringBootTest
+@AutoConfigureMockMvc
 class FinTrackerApplicationTests {
 	companion object {
-		private val objectMapper = jacksonObjectMapper()
+		private var objectMapper = jacksonObjectMapper()
 	}
 
 	@Test
 	@DisplayName("Запрос списка записей")
-	fun getAll() {
-		val response = FinTrackerCoreService.getAll()
-
-		assertAll(
-			{ assertEquals(200, response.statusCode) },
-			{ assertThat(response.body).isNotNull },
-			{ assertThat(response.body).isNotEmpty }
-		)
-
+	fun getAllSpending(@Autowired mvc: MockMvc) {
+		mvc.perform(MockMvcRequestBuilders.get("/fintracker"))
+			.andExpectAll(
+				MockMvcResultMatchers.status().isOk,
+				MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON)
+			)
 	}
+
 
 	@Test
 	@DisplayName("Запрос записи по её id")
-	fun getById() {
-		val response = FinTrackerCoreService.getRecordById(1)
-
-		assertAll(
-			{ assertEquals(200, response.statusCode) },
-			{ assertEquals(1, response.body.id) },
-			{ assertEquals(100.0, response.body.amount) },
-			{ assertEquals("Расход", response.body.type) },
-			{ assertEquals("Семь чебуреков на вокзале", response.body.comment) }
-		)
+	fun getSpendingById(@Autowired mvc: MockMvc) {
+		mvc.perform(MockMvcRequestBuilders.get("/fintracker/1"))
+			.andExpectAll(
+				MockMvcResultMatchers.status().isOk,
+				MockMvcResultMatchers.content().json("""
+					{
+						"id":1,
+						"amount":100.0,
+						"type":"Расход",
+						"comment":"Семь чебуреков на вокзале"
+					}
+				""".trimIndent())
+			)
 	}
 
 	@Test
 	@DisplayName("Запрос записи по её id. Ошибка при несуществующем id")
-	fun getByIdErrorNotExistingId() {
-		val id = 0
-		val response = FinTrackerCoreService.getRecordById(id)
-		val errorResponse: ErrorResponse = objectMapper.readValue(response.content!!)
-
-		assertAll(
-			{ assertEquals(404, response.statusCode) },
-			{ assertEquals("spendingNotFound", errorResponse.errorCode) },
-			{ assertEquals("Запись с id: $id не найдена.", errorResponse.description) }
-		)
+	fun getSpendingByIdErrorNotFound(@Autowired mvc: MockMvc) {
+		mvc.perform(MockMvcRequestBuilders.get("/fintracker/0"))
+			.andExpectAll(
+				MockMvcResultMatchers.status().isNotFound,
+				MockMvcResultMatchers.content().json("""
+					{
+						"errorCode":"spendingNotFound",
+						"description":"Запись с id: 0 не найдена."
+					}
+				""".trimIndent())
+			)
 	}
 
 	@Test
 	@DisplayName("Создание записи")
-	fun addRecord() {
-		val requestBody = RequestBody(
-			amount = 80.0,
-			type = "Расход",
-			comment = "Пирожок"
+	fun createSpending(@Autowired mvc: MockMvc) {
+		val response = mvc.perform(MockMvcRequestBuilders.post("/fintracker")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content("""
+				{
+					"amount":80.0,
+					"type":"Расход",
+					"comment":"Пирожок"
+				}
+			""".trimIndent())
 		)
+			.andExpectAll(
+				MockMvcResultMatchers.status().isCreated,
+				MockMvcResultMatchers.jsonPath("code").value("success"),
+				MockMvcResultMatchers.jsonPath("id").isNumber,
+				MockMvcResultMatchers.jsonPath("message").value("Запись успешно создана.")
+			)
+			.andReturn().response.contentAsString
+		val id = objectMapper.readValue<BaseResponse>(response).id
 
-		val response = FinTrackerCoreService.createRecord(requestBody)
-
-		assertAll(
-			{ assertEquals(201, response.statusCode) },
-			{ assertEquals("success", response.body.code) },
-			{ assertEquals("Запись успешно создана.", response.body.message) },
-			{ assertThat(response.body.id).isNotNull() }
-		)
-
-		FinTrackerCoreService.deleteRecord(response.body.id!!)
+		mvc.perform(MockMvcRequestBuilders.delete("/fintracker/$id"))
 	}
 
 	@Test
 	@DisplayName("Обновление записи")
-	fun updateRecord() {
-		val createRequestBody = RequestBody(
-			amount = 80.0,
-			type = "Расход",
-			comment = "Пирожок"
-		)
-		val id = FinTrackerCoreService.createRecord(createRequestBody).body.id
-		val updateRequestBody = RequestBody(
-			comment = "Или не пирожок"
-		)
+	fun updateSpending(@Autowired mvc: MockMvc) {
+		val response = mvc.perform(MockMvcRequestBuilders.post("/fintracker")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content("""
+				{
+					"amount":80.0,
+					"type":"Расход",
+					"comment":"Пирожок"
+				}
+			""".trimIndent())
+		).andReturn().response.contentAsString
+		val id = objectMapper.readValue<BaseResponse>(response).id
 
-		val response = FinTrackerCoreService.updateRecord(updateRequestBody, id!!)
-
-		assertAll(
-			{ assertEquals(200, response.statusCode) },
-			{ assertEquals("success", response.body.code) },
-			{ assertEquals("Запись успешно обновлена.", response.body.message) },
-			{ assertEquals(id, response.body.id) }
+		mvc.perform(MockMvcRequestBuilders.patch("/fintracker/$id")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content("""
+				{
+					"comment":"Или не пирожок"
+				}
+			""".trimIndent())
 		)
+			.andExpectAll(
+				MockMvcResultMatchers.status().isOk,
+				MockMvcResultMatchers.jsonPath("code").value("success"),
+				MockMvcResultMatchers.jsonPath("id").value(id),
+				MockMvcResultMatchers.jsonPath("message").value("Запись успешно обновлена.")
+			)
 
-		FinTrackerCoreService.deleteRecord(response.body.id!!)
+		mvc.perform(MockMvcRequestBuilders.delete("/fintracker/$id"))
 	}
 
 	@Test
 	@DisplayName("Обновление записи. Ошибка при несуществующем id")
-	fun updateRecordErrorNoyExistingId() {
-		val id = 0
-		val updateRequestBody = RequestBody(
-			comment = "Или не пирожок"
+	fun updateSpendingErrorNotFound(@Autowired mvc: MockMvc) {
+		mvc.perform(MockMvcRequestBuilders.patch("/fintracker/0")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content("""
+				{
+					"comment":"Или не пирожок"
+				}
+			""".trimIndent())
 		)
-		val response = FinTrackerCoreService.updateRecord(updateRequestBody, id)
-		val errorResponse: ErrorResponse = objectMapper.readValue(response.content!!)
-
-		assertAll(
-			{ assertEquals(404, response.statusCode) },
-			{ assertEquals("spendingNotFound", errorResponse.errorCode) },
-			{ assertEquals("Запись с id: $id не найдена.", errorResponse.description) }
-		)
+			.andExpectAll(
+				MockMvcResultMatchers.status().isNotFound,
+				MockMvcResultMatchers.content().json("""
+					{
+						"errorCode":"spendingNotFound",
+						"description":"Запись с id: 0 не найдена."
+					}
+				""".trimIndent())
+			)
 	}
 
 	@Test
 	@DisplayName("Удаление записи")
-	fun deleteRecord() {
-		val requestBody = RequestBody(
-			amount = 85.0,
-			type = "Расход",
-			comment = "Булочка"
-		)
-		val id = FinTrackerCoreService.createRecord(requestBody).body.id
-		val response = FinTrackerCoreService.deleteRecord(id!!)
+	fun deleteSpending(@Autowired mvc: MockMvc) {
+		val response = mvc.perform(MockMvcRequestBuilders.post("/fintracker")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content("""
+				{
+					"amount":80.0,
+					"type":"Расход",
+					"comment":"Пирожок"
+				}
+			""".trimIndent())
+		).andReturn().response.contentAsString
+		val id = objectMapper.readValue<BaseResponse>(response).id
 
-		assertAll(
-			{ assertEquals(200, response.statusCode) },
-			{ assertEquals("success", response.body.code) },
-			{ assertEquals("Запись успешно удалена.", response.body.message) },
-			{ assertEquals(id, response.body.id) }
-		)
+		mvc.perform(MockMvcRequestBuilders.delete("/fintracker/$id"))
+			.andExpectAll(
+				MockMvcResultMatchers.status().isOk,
+				MockMvcResultMatchers.jsonPath("code").value("success"),
+				MockMvcResultMatchers.jsonPath("id").value(id),
+				MockMvcResultMatchers.jsonPath("message").value("Запись успешно удалена.")
+			)
 	}
 
 	@Test
 	@DisplayName("Удаление записи. Ошибка при несуществующем id")
-	fun deleteRecordErrorWithExistingId() {
-		val id = 0
-		val response = FinTrackerCoreService.deleteRecord(id)
-		val errorResponse: ErrorResponse = objectMapper.readValue(response.content!!)
-
-		assertAll(
-			{ assertEquals(404, response.statusCode) },
-			{ assertEquals("spendingNotFound", errorResponse.errorCode) },
-			{ assertEquals("Запись с id: $id не найдена.", errorResponse.description) }
-		)
+	fun deleteSpendingErrorNotFound(@Autowired mvc: MockMvc) {
+		mvc.perform(MockMvcRequestBuilders.delete("/fintracker/0"))
+			.andExpectAll(
+				MockMvcResultMatchers.status().isNotFound,
+				MockMvcResultMatchers.content().json("""
+					{
+						"errorCode":"spendingNotFound",
+						"description":"Запись с id: 0 не найдена."
+					}
+				""".trimIndent())
+			)
 	}
 
 }

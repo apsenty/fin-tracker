@@ -28,7 +28,6 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-	testImplementation("io.rest-assured:rest-assured:5.3.0")
 }
 
 kotlin {
@@ -39,4 +38,5 @@ kotlin {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+	defaultCharacterEncoding = "UTF-8"
 }
