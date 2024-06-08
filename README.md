@@ -22,14 +22,52 @@
 
 
 ### Стек проекта
-- ![Kotlin](https://img.shields.io/badge/Kotlin-7f52ff?logo=Kotlin&logoColor=white)
-- ![Gradle](https://img.shields.io/badge/Gradle-02303A?logo=gradle&logoColor=white)
-- ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)
+- ![Static Badge](https://img.shields.io/badge/Kotlin-7f52ff?logo=Kotlin&logoColor=white)
+- ![Static Badge](https://img.shields.io/badge/Gradle-02303A?logo=gradle&logoColor=white)
+- ![Static Badge](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)
 
 ### Фреймворк
-- ![Spring Boot Web](https://img.shields.io/badge/Spring%20Boot%20Web-6DB33F?logo=spring&logoColor=white)
-- ![Spring Data JPA](https://img.shields.io/badge/Spring%20Data%20JPA-6DB33F?logo=spring&logoColor=white)
+- ![Static Badge](https://img.shields.io/badge/Spring%20Boot%20Web-6DB33F?logo=spring&logoColor=white)
+- ![Static Badge](https://img.shields.io/badge/Spring%20Data%20JPA-6DB33F?logo=spring&logoColor=white)
 
 ### Тесты
-- ![JUnit 5](https://img.shields.io/badge/JUnit%205-25A162?logo=junit5&logoColor=white)
-- ![SpringBootTest](https://img.shields.io/badge/Spring%20Boot%20Test-6DB33F?logo=spring&logoColor=white)
+- ![Static Badge](https://img.shields.io/badge/JUnit%205-25A162?logo=junit5&logoColor=white)
+- ![Static Badge](https://img.shields.io/badge/Spring%20Boot%20Test-6DB33F?logo=spring&logoColor=white)
+
+## Установка и запуск
+Для установки и запуска необходимо, чтобы у вас была установлена СУБД [PostgreSQL](https://www.postgresql.org/download/)
+(ссылка ведет на оф. сайт PostgreSQL).
+
+1. Скачайте данный репозиторий.
+2. Перед запуском приложения необходимо создать БД.
+   1. Выполните SQL-запрос для создания БД finance_tracker:
+      ```sql 
+      CREATE DATABASE finance_tracker
+      WITH
+      OWNER = postgres
+      ENCODING = 'UTF8'
+      LC_COLLATE = 'Russian_Russia.1251'
+      LC_CTYPE = 'Russian_Russia.1251'
+      LOCALE_PROVIDER = 'libc'
+      TABLESPACE = pg_default
+      CONNECTION LIMIT = -1
+      IS_TEMPLATE = False;
+
+   2. Выполните SQL-запрос для создания таблицы spending:
+      ```sql
+      CREATE TABLE IF NOT EXISTS public.spending
+      (
+      id integer NOT NULL DEFAULT nextval('spending_id_seq'::regclass),
+      amount numeric NOT NULL,
+      type character varying COLLATE pg_catalog."default" NOT NULL,
+      comment character varying COLLATE pg_catalog."default",
+      CONSTRAINT spending_pk PRIMARY KEY (id)
+      )
+   
+      TABLESPACE pg_default;
+   
+      ALTER TABLE IF EXISTS public.spending
+      OWNER to postgres;
+3. В файле `src/main/resources/application.yml` замените значения `your_name` и `your_password` на ваш логин и пароль пользователя БД.
+4. Запустите приложение `FinTrackerApplication.kt`.
+5. Теперь вы можете отправлять api-запросы в соответствии с документацией, представленной ниже
