@@ -44,7 +44,7 @@
       ```sql 
       CREATE DATABASE finance_tracker
       WITH
-      OWNER = postgres
+      OWNER = your_db_user_name
       ENCODING = 'UTF8'
       LC_COLLATE = 'Russian_Russia.1251'
       LC_CTYPE = 'Russian_Russia.1251'
@@ -67,7 +67,7 @@
       TABLESPACE pg_default;
    
       ALTER TABLE IF EXISTS public.spending
-      OWNER to postgres;
+      OWNER to your_db_user_name;
 3. В файле `src/main/resources/application.yml` замените значения `your_name` и `your_password` на ваш логин и пароль пользователя БД.
 4. Запустите приложение `FinTrackerApplication.kt`.
 5. Теперь вы можете отправлять api-запросы в соответствии с документацией, представленной ниже.
