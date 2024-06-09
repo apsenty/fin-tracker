@@ -37,7 +37,8 @@
 ### Документация
 <html>
  <body> 
-   <a href="https://apsenty.github.io/fin-tracker/"><img src="src/main/resources/documentation/api-badge.svg" alt="Документация"></a>
+   <a href="https://apsenty.github.io/fin-tracker/" target="_blank"><img src="src/main/resources/documentation/api-badge.svg" 
+alt="Документация"></a>
  </body> 
 </html>
 
@@ -47,7 +48,7 @@
 
 1. Скачайте данный репозиторий.
 2. Перед запуском приложения необходимо создать БД.
-   1. Выполните SQL-запрос для создания БД finance_tracker:
+   1. Выполните SQL-запрос для создания БД `finance_tracker`:
       ```sql 
       CREATE DATABASE finance_tracker
       WITH
@@ -60,7 +61,7 @@
       CONNECTION LIMIT = -1
       IS_TEMPLATE = False;
 
-   2. Выполните SQL-запрос для создания таблицы spending:
+   2. Выполните SQL-запрос для создания таблицы `spending`:
       ```sql
       CREATE TABLE IF NOT EXISTS public.spending
       (

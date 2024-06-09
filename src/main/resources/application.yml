@@ -2,8 +2,8 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/finance_tracker
-    username: "your_name"
-    password: "your_password"
+    username: postgres
+    password: "02061969Mama1!"
   jpa:
     properties:
       hibernate:
